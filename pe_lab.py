@@ -60,16 +60,22 @@ def ask(prompt, system=None, temperature=0.0, max_tokens=512,
 
 
 def safe_ask(*args, **kwargs):
-    """ask() with exponential backoff on rate-limit errors."""
-    for attempt in range(5):
+    """ask() with exponential backoff on transient quota/service errors."""
+    for attempt in range(12):
         try:
             return ask(*args, **kwargs)
         except Exception as e:
             msg = str(e).upper()
-            if "429" not in msg and "RESOURCE_EXHAUSTED" not in msg \
-                    and "RATE" not in msg:
+            retryable = (
+                "429" in msg or
+                "RESOURCE_EXHAUSTED" in msg or
+                "RATE" in msg or
+                "UNAVAILABLE" in msg or
+                "503" in msg
+            )
+            if not retryable:
                 raise
-            wait = 2 ** attempt
-            print(f"rate limited, sleeping {wait}s")
+            wait = min(2 ** attempt, 60)
+            print(f"transient provider retry, attempt {attempt + 1}/12, sleeping {wait}s")
             time.sleep(wait)
-    raise RuntimeError("gave up after 5 rate-limited attempts")
+    raise RuntimeError("gave up after 12 transient-provider attempts")
