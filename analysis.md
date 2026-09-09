@@ -57,3 +57,41 @@ Your rubric scores Completeness by counting three required facts. Name one failu
 ### Answer
 
 A major failure mode the rubric cannot detect is factual inaccuracy hidden inside otherwise complete-looking responses. For example, the model might include all three required facts but get one of them wrong, such as the wrong year or a mistaken description of Note G. An additional measurable criterion would be a factual-accuracy score that checks each required fact against a trusted source and gives points only for correct claims.
+
+# Experiment 3: Iterative Refinement on a Simple Task
+
+## Analysis Question 1
+
+Which constraint was violated most often across your nine runs? Explain why an exact sentence count is harder for the model to satisfy than an approximate word ceiling, in terms of how text is generated token by token.
+
+### Answer
+
+The most frequently violated constraint was the exact two-sentence requirement in Round 1, where all three runs produced far more than two sentences. The word-limit constraint also failed in Round 1, but the sentence-count issue is the stronger signal because the model generates text token by token and does not naturally stop at a precise boundary unless that boundary is strongly specified. An approximate word cap is easier to satisfy because the model can simply produce a shorter response, whereas an exact sentence count requires the model to know when a sentence should terminate and then stop cleanly at that point.
+
+## Analysis Question 2
+
+Round 3 added content requirements while keeping the 45-word cap. Did adding content requirements degrade compliance with the length constraint? Describe the trade-off in your own data.
+
+### Answer
+
+Adding the content requirements did not degrade length compliance in this run. In Round 2, all three runs were within 45 words and exactly two sentences, but one run missed the literal word Verona. In Round 3, all three runs satisfied the sentence count, word limit, Verona check, and feud check. The trade-off is that the added content made the prompt more demanding, but the model still stayed within the 45-word cap by compressing the summary more tightly; the main remaining risk shifted from length to missing a required literal token such as Verona.
+
+## Analysis Question 3
+
+From Table 3.2: which route is cheaper in tokens? Name one realistic situation in which you would still prefer the repair loop despite the cost.
+
+### Answer
+
+The Round 3 prompt in a single call is cheaper in tokens: it used 1 API call, 612 input tokens, and 537 output tokens in the first compliant run, whereas the repair route used 2 calls, 1726 input tokens, and 2042 output tokens. I would still prefer the repair loop when the prompt is expensive to design carefully in advance, or when a user is working interactively and needs a quick fallback that fixes a known formatting issue without re-engineering the entire prompt from scratch.
+
+## Analysis Question 4
+
+Your checker tests for the literal string "Verona". Write one summary that is semantically correct but fails your checker, and one that is semantically wrong but passes it. What does this pair demonstrate about string matching as an evaluation method, and what would you replace it with?
+
+### Answer
+
+A semantically correct summary that fails the checker is: "Two young lovers from rival families in northern Italy die after a feud tears their city apart, and the tragedy shows how love is destroyed by inherited hatred." This is correct in meaning, but it does not contain the literal string Verona, so the checker rejects it.
+
+A semantically wrong summary that passes the checker is: "In Verona, the Montague and Capulet families feud, and Romeo and Juliet marry and live happily ever after." This contains Verona, Montague, and Capulet, so the checker passes it, even though the outcome is factually wrong.
+
+This pair shows that literal string matching is brittle: it can miss correct paraphrases and accept incorrect statements that happen to contain the right words. A better replacement would be a semantic checker that verifies the required entities and events with an entailment or rubric-based judge, or by extracting structured facts and checking them against the story rather than only searching for strings.

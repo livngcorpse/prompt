@@ -59,4 +59,19 @@
 | P0 | 1.0 | No | No | Three newly logged runs are not byte-identical; higher temperature increases variation in wording and detail selection |
 | P1 | 1.0 | No | No | Three newly logged runs are not byte-identical; the answer remains on-topic, but wording, phrasing, and some factual emphasis shift across repeats |
 
+## Table 3.1 - Round-by-round compliance (3 runs per round)
+
+| Round | What changed | Exactly 2 sentences | ≤ 45 words | Verona present | Feud named | Deficiency remaining |
+|---|---|---:|---:|---:|---:|---|
+| R1 | Minimal instruction | 0/3 | 0/3 | 3/3 | 3/3 | All three runs violated the 2-sentence and 45-word constraints |
+| R2 | + length and style | 3/3 | 3/3 | 2/3 | 3/3 | One run omitted the literal word Verona |
+| R3 | + content elements | 3/3 | 3/3 | 3/3 | 3/3 | None; all three runs complied fully |
+
+## Table 3.2 - Single good prompt versus weak prompt plus repair loop
+
+| Route | API calls | Total input tokens | Total output tokens | Compliant at end? |
+|---|---:|---:|---:|---|
+| Round 3 prompt, one call | 1 | 612 | 537 | Yes |
+| Round 1 prompt + repair loop | 2 | 1726 | 2042 | Yes |
+
 
